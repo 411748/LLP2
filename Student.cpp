@@ -1,5 +1,6 @@
 #include "Student.h"
 
+//Building student
 student::student(const char* firstName, const char* lastName, int studentID, double GPA) {
     this->firstName = new char[strlen(firstName) + 1];
     strcpy(this->firstName, firstName);
@@ -10,12 +11,12 @@ student::student(const char* firstName, const char* lastName, int studentID, dou
     this->studentID = studentID;
     this->GPA = GPA;
 }
-
+//Deleting student
 student::~student() {
     delete[] firstName;
     delete[] lastName;
 }
-
+//Functions to build student
 const char* student::getFirstName() {
     return firstName;
 }

@@ -1,3 +1,8 @@
+//Nick Braun
+//1/8/2024
+//Link Lists part 2 - Lets users add students, delete students, print the list, and find the average gpa of all students
+
+//Includes
 #include <cstring>
 #include <iostream>
 #include "Node.h"
@@ -15,13 +20,16 @@ void printStudents(node* head);
 void deleteStudent(node*& head, node* prev, int studentID);
 double averageGPA(node* head);
 
+//Main function
 int main() {
   node* head = nullptr;
   char choice;
 
+  //Only breaks if choice is "Q"
   while (true) {
    cout << "Enter choice (A for ADD, P for PRINT, D for DELETE, V for AVERAGE, Q for QUIT): ";
    cin >> choice;
+   //Adding, puts all input into newNode and then calls the add function
    if (choice == 'A') {
      int studentIDValue;
      cout << "Enter student ID: ";
@@ -38,17 +46,17 @@ int main() {
      cin.ignore(80, '\n');
      student* newStudent = new student(firstName, lastName, studentIDValue, GPA);
      node* newNode = new node(newStudent);
-     addStudent(head, head, head, newNode);
-   }else if (choice == 'P') {
+     addStudent(head, head, head, newNode); 
+   }else if (choice == 'P') { //Printing, calls print function
      printStudents(head);
-   } else if (choice == 'D') {
+   } else if (choice == 'D') { //Deleting, uses inputed Id number to call delete function
      int studentID;
      cout << "Enter student ID to delete: ";
      cin >> studentID;
      deleteStudent(head, nullptr, studentID);
-   } else if (choice == 'V') {
+   } else if (choice == 'V') { //Finds average gpa, calls function
      cout << "Average GPA: " << averageGPA(head) << endl;
-   } else if (choice == 'Q') {
+   } else if (choice == 'Q') { //Quit
      break;
    } else {
      cout << "Invalid choice. Try again." << endl;
@@ -59,6 +67,7 @@ int main() {
 
 // ADD function
 void addStudent(node*& head, node* current, node* pre, node* newNode) {
+  //4 If statements to find where to put the node
   if(head == nullptr) {
     newNode->setNext(head);
     head = newNode;
@@ -75,6 +84,7 @@ void addStudent(node*& head, node* current, node* pre, node* newNode) {
     newNode->setNext(head);
     head = newNode;
   }
+  //Recusion, calling add function at the end
   else {
     node* next = head->getNext();
     addStudent(head, current->getNext(), current, newNode);
@@ -83,22 +93,22 @@ void addStudent(node*& head, node* current, node* pre, node* newNode) {
 
 // PRINT function
 void printStudents(node* head) {
-  if (head == nullptr) {
+  if (head == nullptr) { //Empty board
     return;
   }
-
+  //Printing all the info of each node
   cout << head->getStudent()->getFirstName() << " " << head->getStudent()->getLastName() << ", " << head->getStudent()->getStudentID() << ", " << fixed << setprecision(2) << head->getStudent()->getGPA() << endl;
-
+  //Recursion, after one node printed, calls next one to print
   printStudents(head->getNext());
 }
 
 // DELETE function
 void deleteStudent(node*& head, node* prev, int studentID) {
-  if (head == nullptr) {
+  if (head == nullptr) { 
     cout << "Student not found." << endl;
     return;
   }
-
+  //Finds the node with the same student ID and deletes
   if (head->getStudent()->getStudentID() == studentID) {
     node* temp = head;
     head = head->getNext();
@@ -108,14 +118,15 @@ void deleteStudent(node*& head, node* prev, int studentID) {
     delete temp;
     cout << "Student with ID " << studentID << " deleted." << endl;
     return;
-  } 
+  }
+  //Recursion to find the right node
   node* nextNode = head->getNext();
   deleteStudent(nextNode, head, studentID);
 }
 
 
 // AverageGPA function
-double averageGPA(node* head) {
+double averageGPA(node* head) { //Adds all the gpas togther and divides to find the average
   if (head == nullptr) {
     cout << "No students in the list." << endl;
     return 0.0;
