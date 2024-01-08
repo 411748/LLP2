@@ -10,11 +10,10 @@
 using namespace std;
 
 // Prototypes for future functions
-void addStudent(node*& head);
+void addStudent(node*& head, node* current, node* pre, node* newNode);
 void printStudents(node* head);
-void deleteStudent(node*& head, int studentID);
+void deleteStudent(node*& head, node* prev, int studentID);
 double averageGPA(node* head);
-void deleteList(node*& head);
 
 int main() {
   node* head = nullptr;
@@ -24,14 +23,29 @@ int main() {
    cout << "Enter choice (A for ADD, P for PRINT, D for DELETE, V for AVERAGE, Q for QUIT): ";
    cin >> choice;
    if (choice == 'A') {
-     addStudent(head);
+     int studentIDValue;
+     cout << "Enter student ID: ";
+     cin >> studentIDValue;
+     char firstName[80];
+     char lastName[80];
+     double GPA;
+     cout << "Enter first name: ";
+     cin >> firstName;
+     cout << "Enter last name: ";
+     cin >> lastName;
+     cout << "Enter GPA: ";
+     cin >> GPA;
+     cin.ignore(80, '\n');
+     student* newStudent = new student(firstName, lastName, studentIDValue, GPA);
+     node* newNode = new node(newStudent);
+     addStudent(head, head, head, newNode);
    }else if (choice == 'P') {
      printStudents(head);
    } else if (choice == 'D') {
      int studentID;
      cout << "Enter student ID to delete: ";
      cin >> studentID;
-     deleteStudent(head, studentID);
+     deleteStudent(head, nullptr, studentID);
    } else if (choice == 'V') {
      cout << "Average GPA: " << averageGPA(head) << endl;
    } else if (choice == 'Q') {
@@ -44,39 +58,32 @@ int main() {
 }
 
 // ADD function
-void addStudent(node*& head) {
-  int studentIDValue;
-  cout << "Enter student ID: ";
-  cin >> studentIDValue;
-
-  if (head == nullptr || head->getStudent()->getStudentID() > studentIDValue) {
-    char firstName[80];
-    char lastName[80];
-    double GPA;
-
-    cout << "Enter first name: ";
-    cin >> firstName;
-    cout << "Enter last name: ";
-    cin >> lastName;
-    cout << "Enter GPA: ";
-    cin >> GPA;
-
-    student* newStudent = new student(firstName, lastName, studentIDValue, GPA);
-    node* newNode = new node(newStudent);
-
+void addStudent(node*& head, node* current, node* pre, node* newNode) {
+  if(head == nullptr) {
     newNode->setNext(head);
     head = newNode;
-    }
+  }  
+  else if(head->getStudent()->getStudentID() > newNode->getStudent()->getStudentID()) {
+    newNode->setNext(head);
+    head = newNode;
+  }
+  else if(head->getStudent()->getStudentID() < newNode->getStudent()->getStudentID()) {
+    newNode->setNext(head);
+    head = newNode;
+  }
+  else if(newNode->getStudent()->getStudentID() < current->getStudent()->getStudentID()) {
+    newNode->setNext(head);
+    head = newNode;
+  }
   else {
     node* next = head->getNext();
-    addStudent(next);
+    addStudent(head, current->getNext(), current, newNode);
   }
 }
 
 // PRINT function
 void printStudents(node* head) {
   if (head == nullptr) {
-    cout << "No students in the list." << endl;
     return;
   }
 
@@ -86,7 +93,7 @@ void printStudents(node* head) {
 }
 
 // DELETE function
-void deleteStudent(node*& head, int studentID) {
+void deleteStudent(node*& head, node* prev, int studentID) {
   if (head == nullptr) {
     cout << "Student not found." << endl;
     return;
@@ -95,14 +102,15 @@ void deleteStudent(node*& head, int studentID) {
   if (head->getStudent()->getStudentID() == studentID) {
     node* temp = head;
     head = head->getNext();
-    delete temp->getStudent();
+    if(prev != nullptr) {
+      prev->setNext(head);
+    }
     delete temp;
     cout << "Student with ID " << studentID << " deleted." << endl;
     return;
-  }
-
-  node* nextNode = head->getNext(); 
-  deleteStudent(nextNode, studentID); 
+  } 
+  node* nextNode = head->getNext();
+  deleteStudent(nextNode, head, studentID);
 }
 
 
